@@ -1,10 +1,4 @@
 
-# DecodeLabs - Project 3: AI Recommendation Logic
-# Capstone: Tech Stack Recommender
-
-# Maps a user's raw skills/interests to the closest matching job roles,
-# using Content-Based Filtering: TF-IDF vectorization + Cosine Similarity.
-
 # Pipeline:
 #   1. Ingestion  - capture the user's skills (min. 3 required)
 #   2. Scoring    - vectorize everything (TF-IDF) and compute cosine similarity
@@ -25,13 +19,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DATA_PATH = os.path.join(SCRIPT_DIR, "raw_skills.csv")
 
 
-# SYNONYM / ALIAS MAP - the "Bridging the Language Barrier" slide
-# warns that discrepancies in naming (e.g. "Web Design" vs "Frontend
-# Development") make the similarity math fail, since the model only
-# matches exact tokens, not meaning. This map canonicalizes common
-# abbreviations/aliases to the exact tag used in raw_skills.csv,
-# BEFORE vectorization, so "ML" and "Machine Learning" land in the
-# same vocabulary slot instead of being treated as unrelated words.
+# SYNONYM / ALIAS MAP 
 
 SKILL_ALIASES = {
     "ml": "machine_learning",
@@ -64,9 +52,8 @@ def build_skill_document(skills) -> str:
     return " ".join(normalize_skill(s) for s in skills)
 
 
-# --------------------------------------------------------
 # STEP 1: INGESTION - load the job-role dataset (the "items")
-# --------------------------------------------------------
+
 def load_job_roles(path=DEFAULT_DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
     df["Skills"] = df["Skills"].apply(lambda s: [x.strip() for x in s.split(",")])
@@ -74,9 +61,9 @@ def load_job_roles(path=DEFAULT_DATA_PATH) -> pd.DataFrame:
     return df
 
 
-# --------------------------------------------------------
+
 # STEP 1: INGESTION - capture the user's skills (min 3, per spec)
-# --------------------------------------------------------
+
 def get_user_skills() -> list:
     print("Enter at least 3 skills or interests, separated by commas.")
     print("Example: Python, Cloud Computing, Automation\n")
@@ -97,9 +84,9 @@ def get_user_skills() -> list:
               f"(you entered {len(skills)}). Try again.\n")
 
 
-# --------------------------------------------------------
+
 # STEP 2 & 3 & 4: SCORING, SORTING, FILTERING
-# --------------------------------------------------------
+
 def recommend_careers(user_skills, job_df, top_n=TOP_N):
     # Build the shared vocabulary from the item corpus only, then map
     # the user profile into that SAME vector space (this is what makes
